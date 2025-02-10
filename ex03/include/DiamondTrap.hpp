@@ -4,15 +4,16 @@
 	#include "ScavTrap.hpp"
 	#include "FragTrap.hpp"
 
-	class DiamondTrap : public FragTrap , public ScavTrap
+	class DiamondTrap : public ScavTrap , public  FragTrap
 	{
 		private:
-			std::string	_name;
+			std::string	name;
 		public:
 			DiamondTrap();
 			DiamondTrap(std::string name);
-			// DiamondTrap(const DiamondTrap &obj);
+			DiamondTrap(const DiamondTrap &obj);
 			~DiamondTrap();
-			// DiamondTrap	&operator=(const DiamondTrap &obj);
+			DiamondTrap	&operator=(const DiamondTrap &obj);
+			void whoAmI();
 	};
 #endif

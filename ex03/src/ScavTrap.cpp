@@ -1,7 +1,7 @@
 #include "../include/ScavTrap.hpp"
 ScavTrap::ScavTrap()
 {
-	this->hitPoints = 900;
+	this->hitPoints = 100;
 	this->energyPoints = 50;
 	this->attackDamage = 20;
 	std::cout << GREY << "ScavTrap default constructor called" << RESET << std::endl;
