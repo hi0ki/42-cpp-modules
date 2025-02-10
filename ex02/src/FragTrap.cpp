@@ -32,6 +32,7 @@ FragTrap&	FragTrap::operator=(const FragTrap &obj)
 	}
 	return (*this);
 }
+
 FragTrap::~FragTrap()
 {
 	std::cout << GREY <<  "FragTrap " << this->name << " destructor called" << RESET << std::endl;
