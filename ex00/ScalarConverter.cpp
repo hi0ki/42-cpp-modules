@@ -212,13 +212,9 @@ int handle_pseudo(std::string string)
 
 void ScalarConverter::convert(char *str)
 {
-	if (CheckIfChar(str))
+	if (CheckIfChar(str) || CheckIfInt(str))
 		print_IntOrChar(str);
-	else if (CheckIfInt(str))
-		print_IntOrChar(str);
-	else if (check_if_float(str))
-		print_DoubleOrFloat(str);
-	else if (check_if_double(str))
+	else if (check_if_float(str) || check_if_double(str))
 		print_DoubleOrFloat(str);
 	else if (handle_pseudo(str))
 		return ;
