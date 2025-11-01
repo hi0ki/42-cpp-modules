@@ -18,7 +18,15 @@ int main(int ac , char **av) {
         std::cerr << "Error: could not open file." << std::endl;
         return 1;
     }
-    btc.store_data(data_base, file);
-    btc.parse_data();
+    try
+    {
+        btc.store_data(data_base, file);
+        btc.parse_data();
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
+    
     return 0;
 }
