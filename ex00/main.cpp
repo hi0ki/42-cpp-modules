@@ -27,6 +27,7 @@ int main(int ac , char **av) {
     {
         std::cerr << e.what() << std::endl;
     }
-    
+    data_base.close();
+    file.close();
     return 0;
 }
