@@ -40,10 +40,33 @@ PmergeMe::~PmergeMe()   {}
 
 // Utils
 
+std::vector<size_t> computeJacobSequence(size_t size)
+{
+    std::vector<size_t> Jacob_seq;
+    Jacob_seq.push_back(0);
+    Jacob_seq.push_back(1);
+    
+    while (true)
+    {
+        size_t next = Jacob_seq[Jacob_seq.size() - 1] + 2 * Jacob_seq[Jacob_seq.size() - 2];
+        if (next > size)
+            break;
+        Jacob_seq.push_back(next);
+    }
+    
+    return Jacob_seq;
+}
+
+void binaryInsert(std::vector<int>& arr, int value, size_t start, size_t end)
+{
+	
+}
+
 std::vector<int> mergeInsertV(std::vector<int>& arr)
 {
 	if (arr.size() <= 1)
 		return arr;
+	std::cout << "size ========================= " << arr.size() << std::endl;
 	std::vector<std::pair<int, int> > pairs;
 	for (size_t i = 0; i + 1 < arr.size(); i += 2)
 	{
@@ -59,34 +82,52 @@ std::vector<int> mergeInsertV(std::vector<int>& arr)
 	std::vector<int> main_chain;
 	std::vector<int> pend_chain;
 	for (size_t i = 0; i < pairs.size(); i++)
-	{
 		main_chain.push_back(pairs[i].second);
-		pend_chain.push_back(pairs[i].first);
+	main_chain = mergeInsertV(main_chain);
+	for (size_t i = 0; i < main_chain.size(); i++)
+	{
+		for (size_t j = 0; j < pairs.size(); j++)
+		{
+			if (main_chain[i] == pairs[j].second)
+			{
+				pend_chain.push_back(pairs[j].first);
+				break;
+			}
+		}
 	}
 	if (arr.size() % 2 != 0)
 		pend_chain.push_back(arr[arr.size() - 1]);
-	for (size_t i = 0; i < main_chain.size(); i++)
-		std::cout << main_chain[i] << " ";
-	std::cout << std::endl;
-	for (size_t i = 0; i < pend_chain.size(); i++)
-		std::cout << pend_chain[i] << " ";
-	std::cout << "\n" << "---------------------\n" << std::endl;
-	main_chain = mergeInsertV(main_chain);
-	if (pend_chain.size())
+	if (!pend_chain.empty())
 		main_chain.insert(main_chain.begin(), pend_chain[0]);
-	for (size_t i = 1; i < pend_chain.size(); i++)
+	std::cout << "Pending chain: " << std::endl;
+		std::cout << "size " << pend_chain.size() << std::endl;
+	std::vector<size_t> seq = computeJacobSequence(pend_chain.size());
+
+	std::vector<size_t> new_seq;
+	for (size_t i = 1; i < seq.size(); i++)
 	{
-		std::vector<int>::iterator it = std::lower_bound(main_chain.begin(), 
-														main_chain.end(), 
-														pend_chain[i]);
-		main_chain.insert(it, pend_chain[i]);
+		size_t courrent = seq[i];
+		size_t prev = seq[i - 1];
+		for (size_t j = courrent; j > prev; j--)
+			new_seq.push_back(j);
 	}
-	arr = main_chain;
+	for(size_t i = 0; i < new_seq.size(); i++)
+	{
+		std::cout << new_seq[i] << " ";
+	}
 	std::cout << std::endl;
-	for (size_t i = 0; i < arr.size(); i++)
-		std::cout << arr[i] << " ";
+
+	for (size_t i = 1; i < new_seq.size(); i++)
+	{
+		size_t index = new_seq[i] - 1;
+		int value = pend_chain[index];
+
+	}
+
+	for (size_t i = 0; i < seq.size(); i++)
+		std::cout << seq[i] << " ";
 	std::cout << std::endl;
-	return arr;
+	return main_chain;
 }
 
 void PmergeMe::start()
@@ -97,4 +138,8 @@ void PmergeMe::start()
 	std::cout << std::endl;
 
 	mergeInsertV(this->vec);
+	std::cout << "After:  ";
+	std::cout << std::endl;
+	for (size_t i = 0; i < this->vec.size(); i++)
+		std::cout << this->vec[i] << " ";
 }
