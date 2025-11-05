@@ -57,10 +57,10 @@ std::vector<size_t> computeJacobSequence(size_t size)
     return Jacob_seq;
 }
 
-void binaryInsert(std::vector<int>& arr, int value, size_t start, size_t end)
-{
+// void binaryInsert(std::vector<int>& arr, int value, size_t start, size_t end)
+// {
 	
-}
+// }
 
 std::vector<int> mergeInsertV(std::vector<int>& arr)
 {
@@ -111,18 +111,17 @@ std::vector<int> mergeInsertV(std::vector<int>& arr)
 		for (size_t j = courrent; j > prev; j--)
 			new_seq.push_back(j);
 	}
+
+	for (size_t i = pend_chain.size()-1;  i > seq[seq.size() - 1]; i++)
+	{
+		new_seq.push_back(i);
+	}
+
 	for(size_t i = 0; i < new_seq.size(); i++)
 	{
 		std::cout << new_seq[i] << " ";
 	}
 	std::cout << std::endl;
-
-	for (size_t i = 1; i < new_seq.size(); i++)
-	{
-		size_t index = new_seq[i] - 1;
-		int value = pend_chain[index];
-
-	}
 
 	for (size_t i = 0; i < seq.size(); i++)
 		std::cout << seq[i] << " ";
