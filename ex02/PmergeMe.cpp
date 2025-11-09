@@ -1,5 +1,4 @@
 #include "PmergeMe.hpp"
-#include <unistd.h>
 PmergeMe::PmergeMe() {}
 
 PmergeMe::PmergeMe(int ac, char *av[])
@@ -57,18 +56,23 @@ std::vector<size_t> computeJacobSequence(size_t size)
     return Jacob_seq;
 }
 
-static void binaryInsert(std::vector<int>& arr, int value)
+void binaryInsert(std::vector<int> &arr, int value)
 {
-	// Find the position where value should be inserted
 	std::vector<int>::iterator it = std::lower_bound(arr.begin(), arr.end(), value);
 	arr.insert(it, value);
 }
 
-std::vector<int> mergeInsertV(std::vector<int> arr)
+void binaryInsert(std::deque<int> &arr, int value)
+{
+	std::deque<int>::iterator it = std::lower_bound(arr.begin(), arr.end(), value);
+	arr.insert(it, value);
+}
+
+template<typename T>
+T mergeInsert(T arr)
 {
 	if (arr.size() <= 1)
 		return arr;
-	std::cout << "size ========================= " << arr.size() << std::endl;
 	std::vector<std::pair<int, int> > pairs;
 	for (size_t i = 0; i + 1 < arr.size(); i += 2)
 	{
@@ -77,16 +81,12 @@ std::vector<int> mergeInsertV(std::vector<int> arr)
 		else
 			pairs.push_back(std::make_pair(arr[i + 1], arr[i]));
 	}
-	// print the pairs
-	for (size_t i = 0; i < pairs.size(); i++)
-		std::cout << "(" << pairs[i].first << ", " << pairs[i].second << ") ";
-	std::cout << std::endl;
-	std::vector<int> main_chain;
+	T main_chain;
 	for (size_t i = 0; i < pairs.size(); i++)
 	main_chain.push_back(pairs[i].second);
-	main_chain = mergeInsertV(main_chain);
+	main_chain = mergeInsert(main_chain);
 
-	std::vector<int> pend_chain;
+	T pend_chain;
 	for (size_t i = 0; i < main_chain.size(); i++)
 	{
 		for (size_t j = 0; j < pairs.size(); j++)
@@ -94,36 +94,21 @@ std::vector<int> mergeInsertV(std::vector<int> arr)
 			if (main_chain[i] == pairs[j].second)
 			{
 				pend_chain.push_back(pairs[j].first);
+				pairs.erase(pairs.begin() + j);
 				break;
 			}
 		}
 	}
-	std::cout << "----------------------------------" << std::endl;
-	std::cout << "Main chain before insertion: ";
-	for (size_t i = 0; i < main_chain.size(); i++)
-	{
-		std::cout << main_chain[i] << " ";
-	}
-	std::cout << std::endl;
-	std::cout << "Pend chain: ";
-	for (size_t i = 0; i < pend_chain.size(); i++)
-	{
-		std::cout << pend_chain[i] << " ";
-	}
-	std::cout << std::endl;
 
 	if (arr.size() % 2 != 0)
 		pend_chain.push_back(arr[arr.size() - 1]);
 	if (!pend_chain.empty())
-	{
-		std::cout << "Inserting first pend element: " << pend_chain[0] << std::endl;
 		main_chain.insert(main_chain.begin(), pend_chain[0]);
-	}
 	if (pend_chain.size() <= 1)
 		return main_chain;
+
 	std::vector<size_t> seq = computeJacobSequence(pend_chain.size());
 
-	std::cout << "size of pend chain: " << pend_chain.size() << std::endl;
 	std::vector<size_t> new_seq;
 	for (size_t i = 1; i < seq.size(); i++)
 	{
@@ -133,27 +118,22 @@ std::vector<int> mergeInsertV(std::vector<int> arr)
 			new_seq.push_back(j);
 	}
 	for (size_t i = pend_chain.size() - 1;  i > seq[seq.size() - 1]; i--)
-	{
 		new_seq.push_back(i);
-	}
 
-	for(size_t i = 0; i < new_seq.size(); i++)
-	{
-		std::cout << new_seq[i] << " ";
-	}
-	std::cout << std::endl;
-// print main chain
-// insert elements from pend_chain to main_chain in the order of new_seq
 	for (size_t i = 0; i < new_seq.size(); i++)
 	{
-		
 		size_t index = new_seq[i];
-		std::cout << "Index to insert: " << index << std::endl;
-		std::cout << "Inserting: " << pend_chain[index] << std::endl;
 		binaryInsert(main_chain, pend_chain[index]);
 	}
-	std::cout << "------------------------------------" << std::endl;
-	return main_chain;
+
+	return (main_chain);
+}
+
+double get_the_time(struct timeval& start)
+{
+	struct timeval time;
+	gettimeofday(&time, NULL);
+	return (time.tv_sec * 1000000 + time.tv_usec) - (start.tv_sec * 1000000 + start.tv_usec);
 }
 
 void PmergeMe::start()
@@ -163,9 +143,26 @@ void PmergeMe::start()
 		std::cout << this->vec[i] << " ";
 	std::cout << std::endl;
 
-	this->vec = mergeInsertV(this->vec);
+	double time_vec = 0;
+	double time_deq = 0;
+	size_t elements = this->vec.size();
+	struct timeval start;
+	gettimeofday(&start, NULL);
+
+	// Vector Part
+	this->vec = mergeInsert(this->vec);
+	time_vec = get_the_time(start);
+
+	// Deque Part
+	gettimeofday(&start, NULL);
+	this->deq = mergeInsert(this->deq);
+	time_deq = get_the_time(start);
+
 	std::cout << "After:  ";
-	std::cout << std::endl;
 	for (size_t i = 0; i < this->vec.size(); i++)
 		std::cout << this->vec[i] << " ";
+	std::cout << std::endl;
+
+	std::cout << "Time to process a range of " << elements << " elements with std::vector : " << time_vec << " us" << std::endl;
+	std::cout << "Time to process a range of " << elements << " elements with std::deque  : " << time_deq << " us" << std::endl;
 }
