@@ -37,25 +37,35 @@ PmergeMe& PmergeMe::operator=(const PmergeMe& other)
 
 PmergeMe::~PmergeMe()   {}
 
-// Utils
-
+// get the jacob sequence order
 std::vector<size_t> computeJacobSequence(size_t size)
 {
-    std::vector<size_t> Jacob_seq;
-    Jacob_seq.push_back(0);
-    Jacob_seq.push_back(1);
+    std::vector<size_t> seq;
+    seq.push_back(0);
+    seq.push_back(1);
     
     while (true)
     {
-        size_t next = Jacob_seq[Jacob_seq.size() - 1] + 2 * Jacob_seq[Jacob_seq.size() - 2];
+        size_t next = seq[seq.size() - 1] + 2 * seq[seq.size() - 2];
         if (next >= size)
             break;
-        Jacob_seq.push_back(next);
+        seq.push_back(next);
     }
     
-    return Jacob_seq;
+	std::vector<size_t> new_seq;
+	for (size_t i = 1; i < seq.size(); i++)
+	{
+		size_t courrent = seq[i];
+		size_t prev = seq[i - 1];
+		for (size_t j = courrent; j > prev; j--)
+			new_seq.push_back(j);
+	}
+	for (size_t i = size - 1;  i > seq[seq.size() - 1]; i--)
+		new_seq.push_back(i);
+    return new_seq;
 }
 
+// binary insert
 void binaryInsert(std::vector<int> &arr, int value)
 {
 	std::vector<int>::iterator it = std::lower_bound(arr.begin(), arr.end(), value);
@@ -67,6 +77,7 @@ void binaryInsert(std::deque<int> &arr, int value)
 	std::deque<int>::iterator it = std::lower_bound(arr.begin(), arr.end(), value);
 	arr.insert(it, value);
 }
+
 
 template<typename T>
 T mergeInsert(T arr)
@@ -107,22 +118,10 @@ T mergeInsert(T arr)
 	if (pend_chain.size() <= 1)
 		return main_chain;
 
-	std::vector<size_t> seq = computeJacobSequence(pend_chain.size());
-
-	std::vector<size_t> new_seq;
-	for (size_t i = 1; i < seq.size(); i++)
+	std::vector<size_t> sequence_order = computeJacobSequence(pend_chain.size());
+	for (size_t i = 0; i < sequence_order.size(); i++)
 	{
-		size_t courrent = seq[i];
-		size_t prev = seq[i - 1];
-		for (size_t j = courrent; j > prev; j--)
-			new_seq.push_back(j);
-	}
-	for (size_t i = pend_chain.size() - 1;  i > seq[seq.size() - 1]; i--)
-		new_seq.push_back(i);
-
-	for (size_t i = 0; i < new_seq.size(); i++)
-	{
-		size_t index = new_seq[i];
+		size_t index = sequence_order[i];
 		binaryInsert(main_chain, pend_chain[index]);
 	}
 
